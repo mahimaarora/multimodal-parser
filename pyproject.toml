@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "multimodal-parser"
 version = "0.1.0"
-description = "RAG Agent with multimodal document parser using Docling for extracting text, tables, and images from PDFs"
+description = "Multimodal RAG agent using Docling to parse and query text, tables, and images from PDFs"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
