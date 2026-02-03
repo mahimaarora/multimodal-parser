@@ -1,0 +1,19 @@
+# Core
+pydantic>=2.0.0
+pandas>=2.0.0
+python-dotenv>=1.0.0
+
+# Document parsing
+docling>=2.0.0
+docling-core>=2.0.0
+
+# LLM and Embeddings
+langchain>=0.3.0
+langchain-google-genai>=2.0.0
+langchain-core>=0.3.0
+
+# Vector Database
+qdrant-client>=1.9.0
+
+# SQL queries on DataFrames
+pandasql>=0.7.3

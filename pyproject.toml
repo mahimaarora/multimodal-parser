@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multimodal-parser"
+version = "0.1.0"
+description = "RAG Agent with multimodal document parser using Docling for extracting text, tables, and images from PDFs"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0.0",
+    "pandas>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "docling>=2.0.0",
+    "docling-core>=2.0.0",
+    "langchain>=0.3.0",
+    "langchain-google-genai>=2.0.0",
+    "langchain-core>=0.3.0",
+    "qdrant-client>=1.9.0",
+    "pandasql>=0.7.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ipykernel>=6.0.0",
+    "jupyter>=1.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["multimodal_parser*"]
