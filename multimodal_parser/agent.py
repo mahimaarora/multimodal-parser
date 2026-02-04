@@ -1,5 +1,5 @@
 """
-Minimal RAG Agent with Tool Calling for Multimodal Document QA.
+RAG Agent with Tool Calling for Multimodal Document QA.
 """
 
 import os

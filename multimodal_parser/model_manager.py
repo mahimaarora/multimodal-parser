@@ -26,7 +26,7 @@ class ModelManager:
             self._llm = ChatGoogleGenerativeAI(
                 model="gemini-2.5-flash",
                 temperature=0.1,
-                max_tokens=1024,
+                max_tokens=None,
                 timeout=60,
                 max_retries=2,
                 api_key=self.api_key,
@@ -64,7 +64,7 @@ class ModelManager:
         except Exception as e:
             logger.warning(f"Table description failed: {e}")
             return f"Table with {num_rows} rows and {len(headers)} columns. Headers: {', '.join(headers)}"
-    
+
     def infer_image_type(self, description: str, caption: str = "") -> str:
         """Infer image type from description and caption."""
         if not description and not caption:
