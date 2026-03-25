@@ -1,6 +1,7 @@
 """HTML report generator for RAG Agent responses."""
 
 import os
+import re
 import base64
 from datetime import datetime
 from pathlib import Path
@@ -80,7 +81,10 @@ def _get_html_header() -> str:
             border: 1px solid #eee;
         }
         .image-container img { max-width: 100%; height: auto; border-radius: 4px; }
-        .image-caption { margin-top: 8px; font-size: 14px; color: #666; }
+        .image-details { margin-top: 8px; }
+        .image-details summary { font-size: 13px; color: #888; cursor: pointer; user-select: none; }
+        .image-details summary:hover { color: #555; }
+        .image-caption { margin-top: 6px; font-size: 14px; color: #666; }
         .image-meta { font-size: 12px; color: #999; margin-top: 4px; }
         table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
         th, td { padding: 10px 12px; text-align: left; border: 1px solid #ddd; }
@@ -146,19 +150,38 @@ def _get_html_footer() -> str:
 
 
 def _render_qa_section(index: int, query: str, result: Dict[str, Any]) -> str:
-    """Render a single Q&A section."""
+    """Render a single Q&A section with images inline in the answer text."""
+    answer_html = result["answer"]
+    images = result.get("images", [])
+
+    # Replace [IMAGE:X] placeholders with rendered image HTML
+    def _replace_image_placeholder(match):
+        img_idx = int(match.group(1))
+        if 0 <= img_idx < len(images):
+            return _render_image(images[img_idx], img_idx)
+        return match.group(0)
+
+    answer_html = re.sub(r'\[IMAGE:\s*(\d+)\s*\]', _replace_image_placeholder, answer_html)
+
+    # Strip any remaining unreplaced [IMAGE:X] placeholders (e.g. LLM hallucinated without calling tool)
+    answer_html = re.sub(r'\s*\[IMAGE:\s*\d+\s*\]\s*', ' ', answer_html)
+
+    # Any images that weren't referenced inline get appended at the end
+    referenced = set(int(m.group(1)) for m in re.finditer(r'\[IMAGE:\s*(\d+)\s*\]', result["answer"]))
+    unreferenced = [(i, img) for i, img in enumerate(images) if i not in referenced]
+
     parts = [
         f'<div class="qa-section">',
         f'<h2><span class="query-number">Q{index}</span></h2>',
         f'<div class="query">{query}</div>',
         '<h3>Answer</h3>',
-        f'<div class="answer">{result["answer"]}</div>',
+        f'<div class="answer">{answer_html}</div>',
     ]
 
-    # Images
-    if result["images"]:
+    # Append any unreferenced images as fallback
+    if unreferenced:
         parts.append("<h3>Images</h3>")
-        for i, img in enumerate(result["images"]):
+        for i, img in unreferenced:
             parts.append(_render_image(img, i))
 
     # Tables
@@ -188,8 +211,15 @@ def _render_image(img: Dict[str, Any], index: int) -> str:
         ext = Path(img["path"]).suffix.lstrip(".") or "png"
         parts.append(f'<img src="data:image/{ext};base64,{img_data}" alt="Image {index+1}">')
     
-    parts.append(f'<div class="image-caption">{img.get("description", "")}</div>')
-    parts.append(f'<div class="image-meta">Type: {img.get("image_type", "unknown")} | Source: {img.get("source", "unknown")}</div>')
+    description = img.get("description", "")
+    image_type = img.get("image_type", "unknown")
+    source = img.get("source", "unknown")
+    if description or image_type or source:
+        parts.append(f'<details class="image-details"><summary>Image details</summary>')
+        if description:
+            parts.append(f'<div class="image-caption">{description}</div>')
+        parts.append(f'<div class="image-meta">Type: {image_type} | Source: {source}</div>')
+        parts.append('</details>')
     parts.append("</div>")
     return "\n".join(parts)
 

@@ -24,8 +24,8 @@ class ModelManager:
         """Get or create the LLM instance."""
         if self._llm is None:
             self._llm = ChatGoogleGenerativeAI(
-                model="gemini-2.5-flash",
-                temperature=0.1,
+                model="gemini-2.5-pro",
+                temperature=0,
                 max_tokens=None,
                 timeout=60,
                 max_retries=2,

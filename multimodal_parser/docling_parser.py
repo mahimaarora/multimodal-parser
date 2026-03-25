@@ -113,7 +113,7 @@ class DoclingParser:
         # Use HybridChunker for text chunks (merges small text segments)
         chunker = HybridChunker(
             tokenizer=None,      # Uses built-in tokenizer by default
-            max_tokens=8192,     # Maximum tokens per chunk
+            max_tokens=2048,     # Maximum tokens per chunk
             merge_peers=True,    # Merge sibling elements in doc hierarchy
             merge_threshold=0.5, # Merge if >=50% of content is the same
         )
