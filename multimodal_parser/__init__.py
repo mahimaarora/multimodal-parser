@@ -13,11 +13,13 @@ from .chunk_models import (
 from .docling_parser import DoclingParser
 from .indexer import DocumentIndexer
 from .agent import RAGAgent
+from .renderer import render
 
 __all__ = [
     "DoclingParser",
     "DocumentIndexer",
     "RAGAgent",
+    "render",
     "ChunkType",
     "ImageType",
     "BaseChunk",

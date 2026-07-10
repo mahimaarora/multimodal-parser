@@ -24,8 +24,8 @@ class ModelManager:
         """Get or create the LLM instance."""
         if self._llm is None:
             self._llm = ChatGoogleGenerativeAI(
-                model="gemini-2.5-flash",
-                temperature=0.1,
+                model="gemini-2.5-pro",
+                temperature=0,
                 max_tokens=None,
                 timeout=60,
                 max_retries=2,
@@ -38,7 +38,7 @@ class ModelManager:
         """Get or create the embeddings instance."""
         if self._embeddings is None:
             self._embeddings = GoogleGenerativeAIEmbeddings(
-                model="models/gemini-embedding-001",
+                model="models/gemini-embedding-2",
                 google_api_key=self.api_key,
             )
         return self._embeddings
