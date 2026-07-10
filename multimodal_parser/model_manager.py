@@ -38,7 +38,7 @@ class ModelManager:
         """Get or create the embeddings instance."""
         if self._embeddings is None:
             self._embeddings = GoogleGenerativeAIEmbeddings(
-                model="models/gemini-embedding-001",
+                model="models/gemini-embedding-2",
                 google_api_key=self.api_key,
             )
         return self._embeddings

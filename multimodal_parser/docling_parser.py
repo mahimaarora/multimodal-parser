@@ -5,7 +5,6 @@ Simple parser to extract text, tables, and images from PDF documents using Docli
 """
 
 import os
-import uuid
 import base64
 import logging
 from pathlib import Path
@@ -56,7 +55,11 @@ class DoclingParser:
             images_output_dir: Directory to save extracted images
         """
         self.api_key = google_api_key or os.getenv("GOOGLE_API_KEY")
-        self.images_output_dir = Path(images_output_dir).resolve() if images_output_dir else Path("data/images").resolve()
+        if images_output_dir:
+            self.images_output_dir = Path(images_output_dir).resolve()
+        else:
+            # Default to data/images in the current working directory (not relative to this file)
+            self.images_output_dir = Path.cwd() / "data" / "images"
         self.images_output_dir.mkdir(parents=True, exist_ok=True)
         
         # Initialize model manager for AI descriptions
@@ -89,7 +92,7 @@ class DoclingParser:
                     "Authorization": f"Bearer {self.api_key}",
                     "x-goog-api-client": "docling-reader/1.0.0",
                 },
-                params={"model": "gemini-2.5-flash", "max_tokens": 1024},
+                params={"model": "gemini-2.5-flash", "max_tokens": 2048},
                 prompt="Describe this image for retrieval purposes. Include: 1) What type of image it is 2) The main subject and content 3) Key information shown 4) What questions this image could help answer. Be concise but specific.",
                 timeout=90.0,
                 scale=1.0,
@@ -135,23 +138,26 @@ class DoclingParser:
         
         # Extract tables and images from document items
         current_heading: Optional[str] = None
-        for item, level in document.iterate_items():
+        image_counter = 1  # Track image numbers per document
+        for item, _ in document.iterate_items():
             if self._is_heading(item):
                 if isinstance(item, TextItem) and item.text:
                     current_heading = item.text
                 continue
-            
+
             if hasattr(item, 'label') and item.label == DocItemLabel.CAPTION:
                 continue
-            
+
             source_page = item.prov[0].page_no if item.prov else None
             chunk = None
-            
+
             if isinstance(item, TableItem):
                 chunk = self._create_table_chunk(item, document, chunk_idx, pdf_path.name, source_page, current_heading)
             elif isinstance(item, PictureItem):
-                chunk = self._create_image_chunk(item, document, chunk_idx, pdf_path.name, source_page, current_heading)
-            
+                chunk = self._create_image_chunk(item, document, chunk_idx, pdf_path.name, source_page, current_heading, image_counter)
+                if chunk:
+                    image_counter += 1
+
             if chunk:
                 chunks.append(chunk)
                 chunk_idx += 1
@@ -189,12 +195,12 @@ class DoclingParser:
         )
     
     def _create_image_chunk(self, item: PictureItem, document, idx: int, source_doc: str,
-                            source_page: Optional[int], parent_heading: Optional[str]) -> ImageChunk:
+                            source_page: Optional[int], parent_heading: Optional[str], image_num: int) -> ImageChunk:
         """Create an ImageChunk from a PictureItem."""
         image_base64 = None
         image_format = None
         image_path = None
-        
+
         # Extract image data from document.pictures using self_ref index
         item_ref = getattr(item, 'self_ref', None)
         if item_ref and item_ref.startswith("#/pictures/") and hasattr(document, 'pictures'):
@@ -208,11 +214,11 @@ class DoclingParser:
                         image_format = image_data["format"]
             except (ValueError, IndexError):
                 pass
-        
+
         # Save image to file
         if image_base64:
             doc_name = Path(source_doc).stem
-            image_filename = f"{doc_name}_{uuid.uuid4()}.{image_format}"
+            image_filename = f"{doc_name}_image_{image_num}.{image_format}"
             image_path = self.images_output_dir / image_filename
             try:
                 with open(image_path, "wb") as f:

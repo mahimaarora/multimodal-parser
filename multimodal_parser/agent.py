@@ -289,7 +289,7 @@ RETRIEVED CONTEXT:
         graph = graph_builder.compile()
         result = graph.invoke(
             {"messages": [SystemMessage(content=system_prompt), HumanMessage(content=user_query)]},
-            {"recursion_limit": 10},
+            {"recursion_limit": 20},
         )
         messages = result["messages"]
 

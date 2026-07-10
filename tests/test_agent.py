@@ -14,40 +14,52 @@ def main():
 
     try:
         queries = [
-            # Q1: Text synthesis - no images needed
+            # Q1: Text synthesis
             "What is RAG and how does it combine retrieval with generation to improve factual accuracy?",
 
-            # Q2: Single image - architecture diagram
-            "Show me the architecture diagram of RAG and explain how the retriever and generator components work together",
+            # Q2: Pure text - no images needed, specific text information
+            "Explain the differences between extractive and generative approaches in question answering. What are the advantages and disadvantages of each?",
 
-            # Q3: Table query with SQL
-            "From the LLM-as-a-Judge paper results table, which model has the highest agreement rate with human judges? List the top 3 models with their exact scores.",
+            # Q3: Pure text - technical concept explanation
+            "What are the main challenges in implementing retrieval-augmented generation systems?",
 
-            # Q4: Multi-image (2-3) - RAG paper has Fig 1 (architecture), Fig 2 (document posterior heatmap), Fig 3 (performance charts)
+            # Q4: Single image - architecture diagram
+            "Explain the architecture of RAG and explain how the retriever and generator components work together",
+
+            # Q5: Table query with SQL
+            "If I need an LLM judge that tracks human preferences closely, which models in the literature align best with human raters? Rank the top three and include their alignment scores.",
+
+            # Q6: Multi-image (2-3) - RAG paper has Fig 1 (architecture), Fig 2 (document posterior heatmap), Fig 3 (performance charts)
             "Walk me through all the key figures in the RAG paper: the architecture overview, the document posterior visualization for Jeopardy generation, and the performance charts showing the effect of retrieving more documents.",
 
-            # Q5: Multi-image (2-3) - LLM-as-a-Judge has Fig 2 (evaluation pipeline), Fig 3 (scoring), Fig 4 (yes/no + pairwise)
+            # Q7: Multi-image (2-3) - LLM-as-a-Judge has Fig 2 (evaluation pipeline), Fig 3 (scoring), Fig 4 (yes/no + pairwise)
             "Explain the different In-Context Learning evaluation methods in LLM-as-a-Judge: how scoring works, how yes/no and pairwise comparison approaches differ, and show the evaluation pipeline diagram.",
 
-            # Q6: Multi-image (2-3) - LLM-as-a-Judge Fig 1 (framework), Fig 5 (four scenarios), Fig 9 (improvement structure)
+            # Q8: Multi-image request - all diagrams related to evaluation
+            "Display all the evaluation-related diagrams and figures. I want to see the complete visual overview of how evaluation works in these systems.",
+
+            # Q9: Multi-image (2-3) - LLM-as-a-Judge Fig 1 (framework), Fig 5 (four scenarios), Fig 9 (improvement structure)
             "Show me the overall framework of the LLM-as-a-Judge survey, the four typical evaluation scenarios, and the structure for how to improve and evaluate LLM-as-a-Judge systems.",
 
-            # Q7: Agent decides - text is sufficient, images exist but are not needed
-            "What are the main types of biases that affect LLM-as-a-Judge systems? List position bias, length bias, and other judgment-specific biases.",
+            # Q10: Pure text - specific details from methodology
+            "What are the main types of biases that affect LLM-as-a-Judge systems?",
 
-            # Q8: Agent decides - pure text answer from RAG paper results
+            # Q11: Pure text - technical comparison
             "What are RAG-Sequence and RAG-Token models, and how do they differ in their approach to marginalizing over retrieved documents?",
 
-            # Q9: Agent decides - text-heavy, formal definition doesn't need a figure
+            # Q12: Pure text - formal definitions
             "What is the formal definition of LLM-as-a-Judge? Explain the mathematical formulation with the basic and enhanced definitions.",
 
-            # Q10: Cross-document comparison - text only, no images needed
+            # Q13: Pure text - cross-document comparison
             "Compare the evaluation approaches used in the RAG paper and the LLM-as-a-Judge paper. How does each paper measure the quality of generated text?",
 
-            # Q11: Table with complex filtering
+            # Q14: Pure text - implementation details
+            "Describe the training process for RAG models. What datasets are used and how is the retriever component initialized?",
+
+            # Q15: Table with complex filtering
             "From the results tables, list all models that have an agreement rate below 50%. Show their names and scores.",
 
-            # Q12 (last): Out-of-domain - should say not enough info, no tools needed
+            # Q16 (last): Out-of-domain - should say not enough info, no tools needed
             "What is the capital of France and how does its economy compare to London?",
         ]
 

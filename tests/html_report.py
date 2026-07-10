@@ -73,6 +73,37 @@ def _get_html_header() -> str:
             font-weight: 500;
         }
         .answer { line-height: 1.6; color: #333; white-space: pre-wrap; }
+        .figure-container {
+            margin: 16px 0;
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+        .figure-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .image-grid.single { grid-template-columns: 1fr; }
+        .image-grid.two { grid-template-columns: repeat(2, 1fr); }
+        .image-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .image-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
         .image-container {
             margin: 16px 0;
             padding: 16px;
@@ -165,6 +196,9 @@ def _render_qa_section(index: int, query: str, result: Dict[str, Any]) -> str:
 
     # Strip any remaining unreplaced [IMAGE:X] placeholders (e.g. LLM hallucinated without calling tool)
     answer_html = re.sub(r'\s*\[IMAGE:\s*\d+\s*\]\s*', ' ', answer_html)
+
+    # Convert markdown bold (**text**) to HTML <strong>
+    answer_html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', answer_html)
 
     # Any images that weren't referenced inline get appended at the end
     referenced = set(int(m.group(1)) for m in re.finditer(r'\[IMAGE:\s*(\d+)\s*\]', result["answer"]))
