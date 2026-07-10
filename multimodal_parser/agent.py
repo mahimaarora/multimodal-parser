@@ -12,7 +12,6 @@ import pandasql as ps
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.models import Filter, FieldCondition, MatchValue
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langchain_core.tools import tool
 from langgraph.graph import StateGraph, START, END, MessagesState
@@ -53,12 +52,6 @@ class RAGAgent:
         collections = [c.name for c in self.client.get_collections().collections]
         if COLLECTION_NAME not in collections:
             raise ValueError(f"Collection '{COLLECTION_NAME}' not found. Run indexer first.")
-
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            api_key=self.api_key,
-            temperature=0,
-        )
 
     # -------------------------------------------------------------------------
     # Helpers
@@ -272,7 +265,7 @@ RETRIEVED CONTEXT:
 {context}"""
 
         # Step 4: Build and run a minimal LangGraph tool-calling agent
-        llm_with_tools = self.llm.bind_tools([display_image, query_table])
+        llm_with_tools = self.model_manager.llm.bind_tools([display_image, query_table])
 
         def call_model(state: MessagesState):
             return {"messages": [llm_with_tools.invoke(state["messages"])]}

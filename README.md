@@ -7,12 +7,14 @@ A RAG (Retrieval-Augmented Generation) agent powered by a multimodal document pa
 - **Multimodal Parsing**: Extract text, tables, and images from PDFs using Docling
 - **Hybrid Chunking**: Smart text chunking that preserves document structure
 - **AI Descriptions**: Auto-generate descriptions for images and tables using Gemini
+- **Sequential Image Naming**: Images saved as `filename_image_1.png`, `filename_image_2.png`, etc.
+- **Default Image Storage**: Extracted images saved to `data/images/` directory
 - **Typed Chunks**: Pydantic models for TextChunk, TableChunk, and ImageChunk
 - **Vector Indexing**: Store typed chunks in vectorDB for semantic search
 - **RAG Agent**: Query documents with tool-calling capabilities:
   - Synthesize answers from multiple text chunks
-  - Display relevant images
-  - Query tables with auto-generated SQL
+  - Display relevant images inline
+  - Query tables with SQL (supports filtering, aggregations, joins)
 
 ## Installation
 
@@ -29,6 +31,11 @@ Create a `.env` file:
 ```
 GOOGLE_API_KEY=your_api_key_here
 ```
+
+## Models Used
+
+- **LLM**: `gemini-2.5-pro` (RAG agent, table descriptions, image descriptions)
+- **Embeddings**: `gemini-embedding-2`
 
 ## Quick Start
 
@@ -84,17 +91,16 @@ multimodal_parser/
 
 ## How It Works
 
-```
-PDF → DoclingParser → [TextChunk, TableChunk, ImageChunk]
-                            ↓
-                    DocumentIndexer → Qdrant
-                            ↓
-                User Query → RAGAgent → Answer + Images + Tables
-```
+![Architecture Diagram](data/display_image/multimodal.jpg)
 
 1. **Parse**: `DoclingParser` extracts content into typed chunks with AI-generated descriptions
-2. **Index**: `DocumentIndexer` embeds chunks and stores in Qdrant
+   - Images are saved to `data/images/` with sequential naming: `document_image_1.png`, `document_image_2.png`, etc.
+   - Tables converted to pandas DataFrames with AI-generated searchable descriptions
+   - Text chunks preserve document structure and headings
+2. **Index**: `DocumentIndexer` embeds chunks and stores in Qdrant vector database
 3. **Query**: `RAGAgent` retrieves relevant chunks and uses tools to formulate answers
+   - `display_image` tool: Shows relevant images inline with `[IMAGE:X]` placeholders
+   - `query_table` tool: Executes SQL queries on table data for numerical analysis
 
 ---
 

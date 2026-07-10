@@ -92,7 +92,7 @@ class DoclingParser:
                     "Authorization": f"Bearer {self.api_key}",
                     "x-goog-api-client": "docling-reader/1.0.0",
                 },
-                params={"model": "gemini-2.5-flash", "max_tokens": 2048},
+                params={"model": "gemini-2.5-pro", "max_tokens": 2048},
                 prompt="Describe this image for retrieval purposes. Include: 1) What type of image it is 2) The main subject and content 3) Key information shown 4) What questions this image could help answer. Be concise but specific.",
                 timeout=90.0,
                 scale=1.0,
